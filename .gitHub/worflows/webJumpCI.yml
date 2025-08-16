@@ -1,21 +1,29 @@
-name: Artifacts
-on: push
+name: Cypress Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
 jobs:
   cypress-run:
-    runs-on: ubuntu-22.04
-    name: Artifacts
+    runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: cypress-io/github-action@v6
-      - uses: actions/upload-artifact@v4
-        
-        # if: failure()
+      - name: 🔄 Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Configurar Node.js
+        uses: actions/setup-node@v3
         with:
-          name: cypress-screenshots
-          path: cypress/screenshots
-          if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
-        with:
-          name: cypress-videos
-          path: cypress/videos
-          if-no-files-found: ignore
+          node-version: '18'
+
+      - name: 📦 Instalar dependências e Cypress
+        run: npm ci
+
+      - name: 🔧 Instalar binário do Cypress
+        run: npx cypress install
+
+      - name: 🧪 Executar testes Cypress
+        run: npx cypress run
